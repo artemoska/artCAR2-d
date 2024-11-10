@@ -8,7 +8,7 @@ canvas.height = window.innerHeight;
 let player = { x: canvas.width / 2 - 25, y: canvas.height - 120, width: 50, height: 100, speed: 5, movingLeft: false, movingRight: false };
 let obstacles = [];
 let roadLines = [];
-let gameSpeed = 4;
+let gameSpeed = 2; // Уменьшаем скорость игры
 let score = 0;
 let gameOver = false;
 
@@ -52,11 +52,12 @@ function addObstacle() {
 
 // Создание полос на дороге
 function createRoadLines() {
-    // Центральные сплошные полосы
+    // Добавляем 2 полосы для обгона с каждой стороны
     roadLines = [
-        { x: canvas.width / 3 - 5, y: -50, width: 10, height: 50 },  // Левые полосы
-        { x: canvas.width / 2 - 5, y: -50, width: 10, height: 50 },  // Центральная полоса
-        { x: canvas.width / 1.5 - 5, y: -50, width: 10, height: 50 }  // Правые полосы
+        { x: canvas.width / 4 - 5, y: -50, width: 10, height: 50 },  // Левые обгонные полосы
+        { x: canvas.width / 4 + canvas.width / 2 - 5, y: -50, width: 10, height: 50 },  // Правые обгонные полосы
+        { x: canvas.width / 4 - 5, y: -50, width: 10, height: 50 },  // Левые обгонные полосы (дублирование)
+        { x: canvas.width / 4 + canvas.width / 2 - 5, y: -50, width: 10, height: 50 }  // Правые обгонные полосы (дублирование)
     ];
 }
 
@@ -79,24 +80,20 @@ function update() {
     ctx.fillStyle = roadColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height); // Фон дороги
 
-    // Рисуем обгонные полосы по бокам
-    ctx.fillStyle = '#888'; // Цвет обгонных полос
-    ctx.fillRect(0, 0, canvas.width / 3, canvas.height);  // Левый обгон
-    ctx.fillRect(canvas.width * 2 / 3, 0, canvas.width / 3, canvas.height);  // Правый обгон
-
-    // Рисуем центральные полосы
+    // Рисуем обгонные полосы
+    ctx.fillStyle = lineColor; // Цвет обгонных полос
     for (let line of roadLines) {
         line.y += gameSpeed;  // Двигаем полосы вниз
-        ctx.fillStyle = lineColor;
         ctx.fillRect(line.x, line.y, line.width, line.height); // Полосы на дороге
     }
 
     // Удаление полос за экраном и сброс их в начало
     roadLines = roadLines.filter(line => line.y < canvas.height);
     if (roadLines[roadLines.length - 1].y > 100) {
-        roadLines.push({ x: canvas.width / 2 - 5, y: -50, width: 10, height: 50 });
-        roadLines.push({ x: canvas.width / 3 - 5, y: -50, width: 10, height: 50 });
-        roadLines.push({ x: canvas.width / 1.5 - 5, y: -50, width: 10, height: 50 });
+        roadLines.push({ x: canvas.width / 4 - 5, y: -50, width: 10, height: 50 });
+        roadLines.push({ x: canvas.width / 4 + canvas.width / 2 - 5, y: -50, width: 10, height: 50 });
+        roadLines.push({ x: canvas.width / 4 - 5, y: -50, width: 10, height: 50 });
+        roadLines.push({ x: canvas.width / 4 + canvas.width / 2 - 5, y: -50, width: 10, height: 50 });
     }
 
     // Управление машиной
@@ -176,7 +173,7 @@ function restartGame() {
     player.y = canvas.height - 120;
     obstacles = [];
     roadLines = [];
-    gameSpeed = 4;
+    gameSpeed = 2; // Возвращаем начальную скорость
     score = 0;
     gameOver = false;
     createRoadLines();  // Пересоздаем полосы
