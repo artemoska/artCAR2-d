@@ -4,9 +4,6 @@ const ctx = canvas.getContext('2d');
 canvas.width = 400;
 canvas.height = 600;
 
-// Убедитесь, что фон канваса не заполняется цветом
-ctx.clearRect(0, 0, canvas.width, canvas.height);
-
 let player = { x: 180, y: 500, width: 50, height: 100, speed: 5 };
 let obstacles = [];
 let roadLines = [];
@@ -14,20 +11,9 @@ let gameSpeed = 4;
 let score = 0;
 let gameOver = false;
 
-// Загрузка изображений
-const playerImg = new Image();
-playerImg.src = 'player-car.png?v=' + new Date().getTime();
-
-const obstacleImg = new Image();
-obstacleImg.src = 'obstacle-car.png?v=' + new Date().getTime();
-
-// Загрузка звуков
-const crashSound = new Audio('crash.mp3'); // Звук столкновения
-const backgroundMusic = new Audio('background-music.mp3'); // Фоновая музыка
-backgroundMusic.loop = true;
-
-// Запуск фоновой музыки
-backgroundMusic.play();
+// Задний фон (дорога)
+const roadColor = '#555'; // Цвет дороги
+const lineColor = 'white'; // Цвет полос
 
 // Управление машиной
 document.addEventListener('keydown', (e) => {
@@ -55,11 +41,15 @@ function update() {
     if (gameOver) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Рисуем дорогу
+    ctx.fillStyle = roadColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height); // Фон дороги
+
     // Движение полос на дороге
     for (let line of roadLines) {
         line.y += gameSpeed;
-        ctx.fillStyle = 'white';
-        ctx.fillRect(line.x, line.y, line.width, line.height);
+        ctx.fillStyle = lineColor;
+        ctx.fillRect(line.x, line.y, line.width, line.height); // Полосы на дороге
     }
 
     // Удаление полос за экраном
@@ -68,13 +58,14 @@ function update() {
     // Добавление новых полос
     if (Math.random() < 0.1) addRoadLine();
 
-    // Отрисовка машины игрока
-    ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
+    // Отрисовка машины игрока (составная модель)
+    drawPlayerCar(player.x, player.y);
 
     // Обновление и отрисовка препятствий
     for (let obstacle of obstacles) {
         obstacle.y += gameSpeed;
-        ctx.drawImage(obstacleImg, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        ctx.fillStyle = 'red'; // Цвет препятствия
+        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
 
         // Проверка столкновений
         if (
@@ -84,9 +75,7 @@ function update() {
             obstacle.x + obstacle.width > player.x
         ) {
             gameOver = true;
-            crashSound.play(); // Звук столкновения
-            backgroundMusic.pause(); // Остановка фоновой музыки
-            alert(`Игра окончена! Ваш счёт: ${score}`); // Исправлено на правильный синтаксис
+            alert(`Игра окончена! Ваш счёт: ${score}`);
             if (confirm("Начать заново?")) {
                 restartGame();
             }
@@ -107,10 +96,29 @@ function update() {
     // Отображение счёта
     ctx.fillStyle = 'white';
     ctx.font = '20px Arial';
-    ctx.fillText(`Счёт: ${score}`, 10, 30); // Исправлено на правильный синтаксис
+    ctx.fillText(`Счёт: ${score}`, 10, 30);
 
     // Обновление экрана
     requestAnimationFrame(update);
+}
+
+// Функция для рисования машины игрока
+function drawPlayerCar(x, y) {
+    // Основная часть кузова машины
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(x, y, 50, 80); // Основной прямоугольник
+
+    // Колеса (круги)
+    ctx.fillStyle = 'black';
+    ctx.beginPath();
+    ctx.arc(x + 12, y + 75, 10, 0, Math.PI * 2); // Левое колесо
+    ctx.arc(x + 38, y + 75, 10, 0, Math.PI * 2); // Правое колесо
+    ctx.fill();
+
+    // Окна (маленькие прямоугольники)
+    ctx.fillStyle = 'white';
+    ctx.fillRect(x + 10, y + 10, 15, 25); // Левое окно
+    ctx.fillRect(x + 25, y + 10, 15, 25); // Правое окно
 }
 
 // Функция для рестарта игры
@@ -122,7 +130,6 @@ function restartGame() {
     gameSpeed = 4;
     score = 0;
     gameOver = false;
-    backgroundMusic.play();
     update();
 }
 
