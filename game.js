@@ -4,6 +4,9 @@ const ctx = canvas.getContext('2d');
 canvas.width = 400;
 canvas.height = 600;
 
+// Убедитесь, что фон канваса не заполняется цветом
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+
 let player = { x: 180, y: 500, width: 50, height: 100, speed: 5 };
 let obstacles = [];
 let roadLines = [];
@@ -13,10 +16,10 @@ let gameOver = false;
 
 // Загрузка изображений
 const playerImg = new Image();
-playerImg.src = 'player-car.png'; // Изображение машины игрока
+playerImg.src = 'player-car.png?v=' + new Date().getTime();
 
 const obstacleImg = new Image();
-obstacleImg.src = 'obstacle-car.png'; // Изображение препятствия (другой машины)
+obstacleImg.src = 'obstacle-car.png?v=' + new Date().getTime();
 
 // Загрузка звуков
 const crashSound = new Audio('crash.mp3'); // Звук столкновения
