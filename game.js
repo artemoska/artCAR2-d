@@ -11,20 +11,8 @@ let gameSpeed = 2;  // Уменьшенная скорость игры
 let score = 0;
 let gameOver = false;
 
-// Задний фон (дорога)
-const roadColor = '#555'; // Цвет дороги
-
-// Места для появления машин
-const obstaclePositions = [
-    { x: canvas.width / 5, y: -100 },
-    { x: canvas.width / 5 * 2, y: -100 },
-    { x: canvas.width / 5 * 3, y: -100 },
-    { x: canvas.width / 5 * 4, y: -100 }
-];
-let currentPositionIndex = 0;
-
 // Размеры красных зон
-const zoneWidth = 30; // Ширина красной зоны
+const zoneWidth = 50; // Ширина красной зоны
 
 // Обработка кнопок мыши
 document.getElementById('left').addEventListener('mousedown', () => player.movingLeft = true);
@@ -53,17 +41,11 @@ document.addEventListener('keyup', (e) => {
 
 // Создание препятствий
 function addObstacle() {
-    if (currentPositionIndex >= obstaclePositions.length) {
-        currentPositionIndex = 0; // Сбрасываем индекс, чтобы начать поочередно снова
-    }
-    
-    let position = obstaclePositions[currentPositionIndex];
-    let width = Math.random() * 40 + 30; // Случайная ширина машины
-    let height = Math.random() * 50 + 50; // Случайная высота машины
-    let color = getRandomColor(); // Случайный цвет
-    obstacles.push({ x: position.x, y: position.y, width, height, color });
-    
-    currentPositionIndex++; // Переходим к следующей позиции для следующего препятствия
+    let x = Math.random() * (canvas.width - player.width - zoneWidth * 2) + zoneWidth; // Исключаем красные зоны
+    let width = Math.random() * 40 + 30;
+    let height = Math.random() * 50 + 50;
+    let color = getRandomColor();
+    obstacles.push({ x, y: -height, width, height, color });
 }
 
 // Получение случайного цвета
@@ -82,10 +64,10 @@ function update() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Рисуем дорогу
-    ctx.fillStyle = roadColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height); // Фон дороги
+    ctx.fillStyle = '#555';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Рисуем красные зоны по бокам
+    // Рисуем красные зоны
     ctx.fillStyle = 'red';
     ctx.fillRect(0, 0, zoneWidth, canvas.height); // Левая зона
     ctx.fillRect(canvas.width - zoneWidth, 0, zoneWidth, canvas.height); // Правая зона
@@ -114,10 +96,10 @@ function update() {
     // Обновление и отрисовка препятствий
     for (let obstacle of obstacles) {
         obstacle.y += gameSpeed;
-        ctx.fillStyle = obstacle.color; // Препятствие с случайным цветом
+        ctx.fillStyle = obstacle.color;
         ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
 
-        // Проверка столкновений
+        // Проверка столкновений с машиной игрока
         if (
             obstacle.y + obstacle.height > player.y &&
             obstacle.y < player.y + player.height &&
@@ -154,21 +136,18 @@ function update() {
 
 // Функция для рисования машины игрока
 function drawPlayerCar(x, y) {
-    // Основная часть кузова машины
     ctx.fillStyle = 'blue';
-    ctx.fillRect(x, y, 50, 80); // Основной прямоугольник
+    ctx.fillRect(x, y, 50, 80);
 
-    // Колеса (круги)
     ctx.fillStyle = 'black';
     ctx.beginPath();
-    ctx.arc(x + 12, y + 75, 10, 0, Math.PI * 2); // Левое колесо
-    ctx.arc(x + 38, y + 75, 10, 0, Math.PI * 2); // Правое колесо
+    ctx.arc(x + 12, y + 75, 10, 0, Math.PI * 2);
+    ctx.arc(x + 38, y + 75, 10, 0, Math.PI * 2);
     ctx.fill();
 
-    // Окна (маленькие прямоугольники)
     ctx.fillStyle = 'white';
-    ctx.fillRect(x + 10, y + 10, 15, 25); // Левое окно
-    ctx.fillRect(x + 25, y + 10, 15, 25); // Правое окно
+    ctx.fillRect(x + 10, y + 10, 15, 25);
+    ctx.fillRect(x + 25, y + 10, 15, 25);
 }
 
 // Функция для рестарта игры
@@ -176,7 +155,7 @@ function restartGame() {
     player.x = canvas.width / 2 - 25;
     player.y = canvas.height - 120;
     obstacles = [];
-    gameSpeed = 2; // Возвращаем начальную скорость игры
+    gameSpeed = 2;
     score = 0;
     gameOver = false;
     update();
