@@ -52,11 +52,11 @@ function addObstacle() {
 
 // Создание полос на дороге
 function createRoadLines() {
-    // Создаем полосы на дороге на фиксированных позициях
+    // Центральные сплошные полосы
     roadLines = [
-        { x: canvas.width / 3 - 5, y: -50, width: 10, height: 50 },
-        { x: canvas.width / 2 - 5, y: -50, width: 10, height: 50 },
-        { x: canvas.width / 1.5 - 5, y: -50, width: 10, height: 50 }
+        { x: canvas.width / 3 - 5, y: -50, width: 10, height: 50 },  // Левые полосы
+        { x: canvas.width / 2 - 5, y: -50, width: 10, height: 50 },  // Центральная полоса
+        { x: canvas.width / 1.5 - 5, y: -50, width: 10, height: 50 }  // Правые полосы
     ];
 }
 
@@ -79,7 +79,12 @@ function update() {
     ctx.fillStyle = roadColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height); // Фон дороги
 
-    // Рисуем полосы
+    // Рисуем обгонные полосы по бокам
+    ctx.fillStyle = '#888'; // Цвет обгонных полос
+    ctx.fillRect(0, 0, canvas.width / 3, canvas.height);  // Левый обгон
+    ctx.fillRect(canvas.width * 2 / 3, 0, canvas.width / 3, canvas.height);  // Правый обгон
+
+    // Рисуем центральные полосы
     for (let line of roadLines) {
         line.y += gameSpeed;  // Двигаем полосы вниз
         ctx.fillStyle = lineColor;
