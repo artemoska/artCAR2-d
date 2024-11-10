@@ -19,15 +19,15 @@
         }
         #controls {
             position: fixed;
-            bottom: 10px;
+            bottom: 20px;
             width: 100%;
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
         }
         .control-btn {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             background-color: #999;
             border-radius: 50%;
             font-size: 30px;
@@ -62,13 +62,14 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
+        // Параметры игрока
         let player = { x: canvas.width / 2 - 25, y: canvas.height - 120, width: 50, height: 100, speed: 5, movingLeft: false, movingRight: false };
         let obstacles = [];
         let gameSpeed = 2;
         let score = 0;
         let gameOver = false;
 
-        // Размеры красных зон
+        // Зоны для перезапуска
         const zoneWidth = 50;
 
         // Обработка кнопок
@@ -80,16 +81,16 @@
         rightButton.addEventListener('touchstart', () => player.movingRight = true);
         rightButton.addEventListener('touchend', () => player.movingRight = false);
 
-        // Создание препятствий
+        // Создание препятствий с учетом ширины экрана
         function addObstacle() {
-            let x = Math.random() * (canvas.width - player.width - zoneWidth * 2) + zoneWidth;
-            let width = Math.random() * 40 + 30;
-            let height = Math.random() * 50 + 50;
+            const obstacleWidth = Math.min(Math.random() * 30 + 20, canvas.width / 6); // Пропорционально ширине экрана
+            const obstacleHeight = Math.random() * 50 + 40;
+            let x = Math.random() * (canvas.width - obstacleWidth - zoneWidth * 2) + zoneWidth;
             let color = getRandomColor();
-            obstacles.push({ x, y: -height, width, height, color });
+            obstacles.push({ x, y: -obstacleHeight, width: obstacleWidth, height: obstacleHeight, color });
         }
 
-        // Получение случайного цвета
+        // Генерация случайного цвета
         function getRandomColor() {
             const letters = '0123456789ABCDEF';
             let color = '#';
@@ -99,17 +100,17 @@
             return color;
         }
 
-        // Обновление игры
+        // Обновление состояния игры
         function update() {
             if (gameOver) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Рисуем красные зоны
+            // Красные зоны по краям
             ctx.fillStyle = 'red';
             ctx.fillRect(0, 0, zoneWidth, canvas.height);
             ctx.fillRect(canvas.width - zoneWidth, 0, zoneWidth, canvas.height);
 
-            // Проверка на столкновение с красными зонами
+            // Проверка касания с красными зонами
             if (player.x < zoneWidth || player.x + player.width > canvas.width - zoneWidth) {
                 gameOver = true;
                 alert(`Игра окончена! Ваш счёт: ${score}`);
@@ -119,7 +120,7 @@
                 return;
             }
 
-            // Управление машиной
+            // Движение игрока
             if (player.movingLeft && player.x > zoneWidth) {
                 player.x -= player.speed;
             }
@@ -127,7 +128,7 @@
                 player.x += player.speed;
             }
 
-            // Отрисовка машины игрока
+            // Рисуем машину игрока
             drawPlayerCar(player.x, player.y);
 
             // Обновление и отрисовка препятствий
@@ -136,7 +137,7 @@
                 ctx.fillStyle = obstacle.color;
                 ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
 
-                // Проверка столкновений с машиной игрока
+                // Проверка столкновений
                 if (
                     obstacle.y + obstacle.height > player.y &&
                     obstacle.y < player.y + player.height &&
@@ -152,7 +153,7 @@
                 }
             }
 
-            // Удаление препятствий за экраном
+            // Удаление вышедших за экран препятствий
             obstacles = obstacles.filter(obstacle => obstacle.y < canvas.height);
 
             // Добавление новых препятствий
@@ -170,7 +171,7 @@
             requestAnimationFrame(update);
         }
 
-        // Функция для рисования машины игрока
+        // Рисование машины игрока
         function drawPlayerCar(x, y) {
             ctx.fillStyle = 'blue';
             ctx.fillRect(x, y, 50, 80);
@@ -186,7 +187,7 @@
             ctx.fillRect(x + 25, y + 10, 15, 25);
         }
 
-        // Функция для рестарта игры
+        // Перезапуск игры
         function restartGame() {
             player.x = canvas.width / 2 - 25;
             player.y = canvas.height - 120;
@@ -197,7 +198,7 @@
             update();
         }
 
-        // Инициализация игры
+        // Запуск игры
         update();
     </script>
 </body>
