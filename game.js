@@ -1,8 +1,8 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-canvas.width = window.innerWidth; // Полный экран по ширине
-canvas.height = window.innerHeight; // Полный экран по высоте
+canvas.width = window.innerWidth;  // Игровое поле на весь экран по ширине
+canvas.height = window.innerHeight; // Игровое поле на весь экран по высоте
 
 let player = { x: canvas.width / 2 - 25, y: canvas.height - 120, width: 50, height: 100, speed: 5, movingLeft: false, movingRight: false };
 let obstacles = [];
@@ -15,12 +15,13 @@ let gameOver = false;
 const roadColor = '#555'; // Цвет дороги
 const lineColor = 'white'; // Цвет полос
 
-// Управление машиной с помощью стрелок
+// Обработка кнопок мыши
 document.getElementById('left').addEventListener('mousedown', () => player.movingLeft = true);
 document.getElementById('left').addEventListener('mouseup', () => player.movingLeft = false);
 document.getElementById('right').addEventListener('mousedown', () => player.movingRight = true);
 document.getElementById('right').addEventListener('mouseup', () => player.movingRight = false);
 
+// Обработка клавиш
 document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft') {
         player.movingLeft = true;
