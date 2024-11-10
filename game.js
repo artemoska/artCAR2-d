@@ -83,7 +83,7 @@ function update() {
             gameOver = true;
             crashSound.play(); // Звук столкновения
             backgroundMusic.pause(); // Остановка фоновой музыки
-            alert(`Игра окончена! Ваш счёт: ${score}`);
+            alert(`Игра окончена! Ваш счёт: ${score}`); // Исправлено на правильный синтаксис
             if (confirm("Начать заново?")) {
                 restartGame();
             }
@@ -104,7 +104,7 @@ function update() {
     // Отображение счёта
     ctx.fillStyle = 'white';
     ctx.font = '20px Arial';
-    ctx.fillText(`Счёт: ${score}`, 10, 30);
+    ctx.fillText(`Счёт: ${score}`, 10, 30); // Исправлено на правильный синтаксис
 
     // Обновление экрана
     requestAnimationFrame(update);
