@@ -79,6 +79,7 @@ function update() {
     }
 
     roadLines = roadLines.filter(line => line.y < canvas.height);
+
     if (roadLines[roadLines.length - 1].y > 100) {
         createRoadLines(); // Создание новых полос
     }
