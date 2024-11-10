@@ -47,11 +47,12 @@ function addObstacle() {
 
 function createRoadLines() {
     roadLines = [
+        { x: canvas.width / 7 - 5, y: -50, width: 10, height: 50 }, // крайняя левая
         { x: canvas.width / 5 - 5, y: -50, width: 10, height: 50 }, // левая полоса
         { x: canvas.width / 5 * 2 - 5, y: -50, width: 10, height: 50 }, // средняя левая
         { x: canvas.width / 5 * 3 - 5, y: -50, width: 10, height: 50 }, // средняя правая
         { x: canvas.width / 5 * 4 - 5, y: -50, width: 10, height: 50 }, // правая
-        { x: canvas.width / 5 * 5 - 5, y: -50, width: 10, height: 50 }  // крайняя правая
+        { x: canvas.width / 7 * 6 - 5, y: -50, width: 10, height: 50 }  // крайняя правая
     ];
 }
 
