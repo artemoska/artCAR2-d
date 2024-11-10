@@ -23,6 +23,9 @@ const obstaclePositions = [
 ];
 let currentPositionIndex = 0;
 
+// Размеры красных зон
+const zoneWidth = 30; // Ширина красной зоны
+
 // Обработка кнопок мыши
 document.getElementById('left').addEventListener('mousedown', () => player.movingLeft = true);
 document.getElementById('left').addEventListener('mouseup', () => player.movingLeft = false);
@@ -82,11 +85,26 @@ function update() {
     ctx.fillStyle = roadColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height); // Фон дороги
 
+    // Рисуем красные зоны по бокам
+    ctx.fillStyle = 'red';
+    ctx.fillRect(0, 0, zoneWidth, canvas.height); // Левая зона
+    ctx.fillRect(canvas.width - zoneWidth, 0, zoneWidth, canvas.height); // Правая зона
+
+    // Проверка на столкновение с красными зонами
+    if (player.x < zoneWidth || player.x + player.width > canvas.width - zoneWidth) {
+        gameOver = true;
+        alert(`Игра окончена! Ваш счёт: ${score}`);
+        if (confirm("Начать заново?")) {
+            restartGame();
+        }
+        return;
+    }
+
     // Управление машиной
-    if (player.movingLeft && player.x > 0) {
+    if (player.movingLeft && player.x > zoneWidth) {
         player.x -= player.speed;
     }
-    if (player.movingRight && player.x < canvas.width - player.width) {
+    if (player.movingRight && player.x < canvas.width - player.width - zoneWidth) {
         player.x += player.speed;
     }
 
