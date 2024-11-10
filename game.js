@@ -51,9 +51,11 @@ function addObstacle() {
 }
 
 // Создание полос на дороге
-function addRoadLine() {
-    let x = Math.random() * (canvas.width - 10); // Случайная позиция полосы
-    roadLines.push({ x, y: -50, width: 10, height: 50 });
+function createRoadLines() {
+    // Создаем полосы на дороге с фиксированными позициями
+    for (let i = 0; i < 5; i++) {
+        roadLines.push({ x: canvas.width / 5 * i + 10, y: -50, width: 10, height: 50 });
+    }
 }
 
 // Получение случайного цвета
@@ -76,12 +78,6 @@ function update() {
     ctx.fillRect(0, 0, canvas.width, canvas.height); // Фон дороги
 
     // Рисуем несколько полос
-    for (let i = 0; i < 5; i++) {
-        ctx.fillStyle = lineColor;
-        ctx.fillRect(canvas.width / 5 * i + 10, 0, 10, canvas.height); // Рисуем полосы
-    }
-
-    // Движение полос на дороге
     for (let line of roadLines) {
         line.y += gameSpeed;
         ctx.fillStyle = lineColor;
@@ -91,8 +87,10 @@ function update() {
     // Удаление полос за экраном
     roadLines = roadLines.filter(line => line.y < canvas.height);
 
-    // Добавление новых полос
-    if (Math.random() < 0.1) addRoadLine();
+    // Добавление новых полос внизу
+    if (roadLines[roadLines.length - 1].y > 100) {
+        roadLines.push({ x: canvas.width / 5 * 2 + 10, y: -50, width: 10, height: 50 });
+    }
 
     // Управление машиной
     if (player.movingLeft && player.x > 0) {
@@ -178,5 +176,5 @@ function restartGame() {
 }
 
 // Инициализация игры
-addRoadLine();
+createRoadLines();
 update();
