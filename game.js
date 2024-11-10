@@ -47,11 +47,11 @@ function addObstacle() {
 
 function createRoadLines() {
     roadLines = [
-        { x: canvas.width / 5 - 5, y: -50, width: 10, height: 50 },
-        { x: canvas.width / 5 * 2 - 5, y: -50, width: 10, height: 50 },
-        { x: canvas.width / 5 * 3 - 5, y: -50, width: 10, height: 50 },
-        { x: canvas.width / 5 * 4 - 5, y: -50, width: 10, height: 50 },
-        { x: canvas.width / 5 * 5 - 5, y: -50, width: 10, height: 50 }
+        { x: canvas.width / 5 - 5, y: -50, width: 10, height: 50 }, // левая полоса
+        { x: canvas.width / 5 * 2 - 5, y: -50, width: 10, height: 50 }, // средняя левая
+        { x: canvas.width / 5 * 3 - 5, y: -50, width: 10, height: 50 }, // средняя правая
+        { x: canvas.width / 5 * 4 - 5, y: -50, width: 10, height: 50 }, // правая
+        { x: canvas.width / 5 * 5 - 5, y: -50, width: 10, height: 50 }  // крайняя правая
     ];
 }
 
@@ -79,11 +79,7 @@ function update() {
 
     roadLines = roadLines.filter(line => line.y < canvas.height);
     if (roadLines[roadLines.length - 1].y > 100) {
-        roadLines.push({ x: canvas.width / 5 - 5, y: -50, width: 10, height: 50 });
-        roadLines.push({ x: canvas.width / 5 * 2 - 5, y: -50, width: 10, height: 50 });
-        roadLines.push({ x: canvas.width / 5 * 3 - 5, y: -50, width: 10, height: 50 });
-        roadLines.push({ x: canvas.width / 5 * 4 - 5, y: -50, width: 10, height: 50 });
-        roadLines.push({ x: canvas.width / 5 * 5 - 5, y: -50, width: 10, height: 50 });
+        createRoadLines(); // Создание новых полос
     }
 
     if (player.movingLeft && player.x > 0) {
