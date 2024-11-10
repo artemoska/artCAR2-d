@@ -1,8 +1,9 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-canvas.width = window.innerWidth;  // Игровое поле на весь экран по ширине
-canvas.height = window.innerHeight; // Игровое поле на весь экран по высоте
+// Устанавливаем размер канваса на весь экран
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
 let player = { x: canvas.width / 2 - 25, y: canvas.height - 120, width: 50, height: 100, speed: 5, movingLeft: false, movingRight: false };
 let obstacles = [];
