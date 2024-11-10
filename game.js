@@ -7,9 +7,12 @@ canvas.height = window.innerHeight;
 
 let player = { x: canvas.width / 2 - 25, y: canvas.height - 120, width: 50, height: 100, speed: 5, movingLeft: false, movingRight: false };
 let obstacles = [];
-let gameSpeed = 4;
+let gameSpeed = 2;  // Уменьшенная скорость игры
 let score = 0;
 let gameOver = false;
+
+// Задний фон (дорога)
+const roadColor = '#555'; // Цвет дороги
 
 // Обработка кнопок мыши
 document.getElementById('left').addEventListener('mousedown', () => player.movingLeft = true);
@@ -61,7 +64,7 @@ function update() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Рисуем дорогу
-    ctx.fillStyle = '#555';
+    ctx.fillStyle = roadColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height); // Фон дороги
 
     // Управление машиной
@@ -140,7 +143,7 @@ function restartGame() {
     player.x = canvas.width / 2 - 25;
     player.y = canvas.height - 120;
     obstacles = [];
-    gameSpeed = 4;
+    gameSpeed = 2; // Возвращаем начальную скорость игры
     score = 0;
     gameOver = false;
     update();
