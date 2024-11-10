@@ -1,10 +1,10 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-canvas.width = 400;
-canvas.height = 600;
+canvas.width = window.innerWidth; // Полный экран по ширине
+canvas.height = window.innerHeight; // Полный экран по высоте
 
-let player = { x: 180, y: 500, width: 50, height: 100, speed: 5 };
+let player = { x: canvas.width / 2 - 25, y: canvas.height - 120, width: 50, height: 100, speed: 5, movingLeft: false, movingRight: false };
 let obstacles = [];
 let roadLines = [];
 let gameSpeed = 4;
@@ -15,25 +15,53 @@ let gameOver = false;
 const roadColor = '#555'; // Цвет дороги
 const lineColor = 'white'; // Цвет полос
 
-// Управление машиной
+// Управление машиной с помощью стрелок
+document.getElementById('left').addEventListener('mousedown', () => player.movingLeft = true);
+document.getElementById('left').addEventListener('mouseup', () => player.movingLeft = false);
+document.getElementById('right').addEventListener('mousedown', () => player.movingRight = true);
+document.getElementById('right').addEventListener('mouseup', () => player.movingRight = false);
+
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft' && player.x > 0) {
-        player.x -= player.speed;
+    if (e.key === 'ArrowLeft') {
+        player.movingLeft = true;
     }
-    if (e.key === 'ArrowRight' && player.x < canvas.width - player.width) {
-        player.x += player.speed;
+    if (e.key === 'ArrowRight') {
+        player.movingRight = true;
+    }
+});
+
+document.addEventListener('keyup', (e) => {
+    if (e.key === 'ArrowLeft') {
+        player.movingLeft = false;
+    }
+    if (e.key === 'ArrowRight') {
+        player.movingRight = false;
     }
 });
 
 // Создание препятствий
 function addObstacle() {
-    let x = Math.random() * (canvas.width - player.width);
-    obstacles.push({ x, y: -100, width: 50, height: 100 });
+    let x = Math.random() * (canvas.width - player.width); // Случайная позиция по X
+    let width = Math.random() * 40 + 30; // Случайная ширина машины
+    let height = Math.random() * 50 + 50; // Случайная высота машины
+    let color = getRandomColor(); // Случайный цвет
+    obstacles.push({ x, y: -height, width, height, color });
 }
 
 // Создание полос на дороге
 function addRoadLine() {
-    roadLines.push({ x: canvas.width / 2 - 5, y: -50, width: 10, height: 50 });
+    let x = Math.random() * (canvas.width - 10); // Случайная позиция полосы
+    roadLines.push({ x, y: -50, width: 10, height: 50 });
+}
+
+// Получение случайного цвета
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
 }
 
 // Обновление игры
@@ -44,6 +72,12 @@ function update() {
     // Рисуем дорогу
     ctx.fillStyle = roadColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height); // Фон дороги
+
+    // Рисуем несколько полос
+    for (let i = 0; i < 5; i++) {
+        ctx.fillStyle = lineColor;
+        ctx.fillRect(canvas.width / 5 * i + 10, 0, 10, canvas.height); // Рисуем полосы
+    }
 
     // Движение полос на дороге
     for (let line of roadLines) {
@@ -58,13 +92,21 @@ function update() {
     // Добавление новых полос
     if (Math.random() < 0.1) addRoadLine();
 
-    // Отрисовка машины игрока (составная модель)
+    // Управление машиной
+    if (player.movingLeft && player.x > 0) {
+        player.x -= player.speed;
+    }
+    if (player.movingRight && player.x < canvas.width - player.width) {
+        player.x += player.speed;
+    }
+
+    // Отрисовка машины игрока
     drawPlayerCar(player.x, player.y);
 
     // Обновление и отрисовка препятствий
     for (let obstacle of obstacles) {
         obstacle.y += gameSpeed;
-        ctx.fillStyle = 'red'; // Цвет препятствия
+        ctx.fillStyle = obstacle.color; // Препятствие с случайным цветом
         ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
 
         // Проверка столкновений
@@ -123,8 +165,8 @@ function drawPlayerCar(x, y) {
 
 // Функция для рестарта игры
 function restartGame() {
-    player.x = 180;
-    player.y = 500;
+    player.x = canvas.width / 2 - 25;
+    player.y = canvas.height - 120;
     obstacles = [];
     roadLines = [];
     gameSpeed = 4;
