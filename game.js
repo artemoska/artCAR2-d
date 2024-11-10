@@ -14,6 +14,15 @@ let gameOver = false;
 // Задний фон (дорога)
 const roadColor = '#555'; // Цвет дороги
 
+// Места для появления машин
+const obstaclePositions = [
+    { x: canvas.width / 5, y: -100 },
+    { x: canvas.width / 5 * 2, y: -100 },
+    { x: canvas.width / 5 * 3, y: -100 },
+    { x: canvas.width / 5 * 4, y: -100 }
+];
+let currentPositionIndex = 0;
+
 // Обработка кнопок мыши
 document.getElementById('left').addEventListener('mousedown', () => player.movingLeft = true);
 document.getElementById('left').addEventListener('mouseup', () => player.movingLeft = false);
@@ -41,11 +50,17 @@ document.addEventListener('keyup', (e) => {
 
 // Создание препятствий
 function addObstacle() {
-    let x = Math.random() * (canvas.width - player.width); // Случайная позиция по X
+    if (currentPositionIndex >= obstaclePositions.length) {
+        currentPositionIndex = 0; // Сбрасываем индекс, чтобы начать поочередно снова
+    }
+    
+    let position = obstaclePositions[currentPositionIndex];
     let width = Math.random() * 40 + 30; // Случайная ширина машины
     let height = Math.random() * 50 + 50; // Случайная высота машины
     let color = getRandomColor(); // Случайный цвет
-    obstacles.push({ x, y: -height, width, height, color });
+    obstacles.push({ x: position.x, y: position.y, width, height, color });
+    
+    currentPositionIndex++; // Переходим к следующей позиции для следующего препятствия
 }
 
 // Получение случайного цвета
