@@ -52,7 +52,7 @@ function addObstacle() {
 
 // Создание полос на дороге
 function createRoadLines() {
-    // Создаем полосы на дороге с фиксированными позициями
+    // Создаем 5 полос на дороге с фиксированными позициями
     roadLines = [
         { x: canvas.width / 5 - 5, y: -50, width: 10, height: 50 }, // 1 полоса
         { x: canvas.width / 5 * 2 - 5, y: -50, width: 10, height: 50 }, // 2 полоса
@@ -92,8 +92,10 @@ function update() {
     roadLines = roadLines.filter(line => line.y < canvas.height);
 
     // Добавление новых полос внизу, если они ушли за экран
-    if (roadLines[roadLines.length - 1].y > 100) {
+    if (roadLines.length < 5) {
         roadLines.push({ x: canvas.width / 5 * 2 - 5, y: -50, width: 10, height: 50 });
+        roadLines.push({ x: canvas.width / 5 * 3 - 5, y: -50, width: 10, height: 50 });
+        roadLines.push({ x: canvas.width / 5 * 4 - 5, y: -50, width: 10, height: 50 });
     }
 
     // Управление машиной
