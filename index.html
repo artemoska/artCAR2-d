@@ -3,15 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2D Гонки</title>
-    <link rel="stylesheet" href="style.css">
+    <title>2D Гоночная игра</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #333;
+        }
+        #gameCanvas {
+            background-color: #555;
+        }
+        #controls {
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            background-color: #999;
+            border-radius: 50%;
+            font-size: 30px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+        .control-btn:active {
+            background-color: #666;
+        }
+    </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
-    <div class="controls">
-        <button id="left" class="arrow">←</button>
-        <button id="right" class="arrow">→</button>
+    <div id="controls">
+        <div id="left" class="control-btn">←</div>
+        <div id="right" class="control-btn">→</div>
     </div>
-    <script src="game.js"></script>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Устанавливаем размер канваса на весь экран устройства
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            player.x = canvas.width / 2 - player.width / 2;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let player = { x: canvas.width / 2 - 25, y: canvas.height - 120, width: 50, height: 100, speed: 5, movingLeft: false, movingRight: false };
+        let obstacles = [];
+        let gameSpeed = 2;
+        let score = 0;
+        let gameOver = false;
+
+        // Размеры красных зон
+        const zoneWidth = 50;
+
+        // Обработка кнопок
+        const leftButton = document.getElementById('left');
+        const rightButton = document.getElementById('right');
+
+        leftButton.addEventListener('touchstart', () => player.movingLeft = true);
+        leftButton.addEventListener('touchend', () => player.movingLeft = false);
+        rightButton.addEventListener('touchstart', () => player.movingRight = true);
+        rightButton.addEventListener('touchend', () => player.movingRight = false);
+
+        // Создание препятствий
+        function addObstacle() {
+            let x = Math.random() * (canvas.width - player.width - zoneWidth * 2) + zoneWidth;
+            let width = Math.random() * 40 + 30;
+            let height = Math.random() * 50 + 50;
+            let color = getRandomColor();
+            obstacles.push({ x, y: -height, width, height, color });
+        }
+
+        // Получение случайного цвета
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // Обновление игры
+        function update() {
+            if (gameOver) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Рисуем красные зоны
+            ctx.fillStyle = 'red';
+            ctx.fillRect(0, 0, zoneWidth, canvas.height);
+            ctx.fillRect(canvas.width - zoneWidth, 0, zoneWidth, canvas.height);
+
+            // Проверка на столкновение с красными зонами
+            if (player.x < zoneWidth || player.x + player.width > canvas.width - zoneWidth) {
+                gameOver = true;
+                alert(`Игра окончена! Ваш счёт: ${score}`);
+                if (confirm("Начать заново?")) {
+                    restartGame();
+                }
+                return;
+            }
+
+            // Управление машиной
+            if (player.movingLeft && player.x > zoneWidth) {
+                player.x -= player.speed;
+            }
+            if (player.movingRight && player.x < canvas.width - player.width - zoneWidth) {
+                player.x += player.speed;
+            }
+
+            // Отрисовка машины игрока
+            drawPlayerCar(player.x, player.y);
+
+            // Обновление и отрисовка препятствий
+            for (let obstacle of obstacles) {
+                obstacle.y += gameSpeed;
+                ctx.fillStyle = obstacle.color;
+                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+
+                // Проверка столкновений с машиной игрока
+                if (
+                    obstacle.y + obstacle.height > player.y &&
+                    obstacle.y < player.y + player.height &&
+                    obstacle.x < player.x + player.width &&
+                    obstacle.x + obstacle.width > player.x
+                ) {
+                    gameOver = true;
+                    alert(`Игра окончена! Ваш счёт: ${score}`);
+                    if (confirm("Начать заново?")) {
+                        restartGame();
+                    }
+                    return;
+                }
+            }
+
+            // Удаление препятствий за экраном
+            obstacles = obstacles.filter(obstacle => obstacle.y < canvas.height);
+
+            // Добавление новых препятствий
+            if (Math.random() < 0.02) addObstacle();
+
+            // Увеличение счёта и скорости
+            score++;
+            if (score % 500 === 0) gameSpeed += 0.5;
+
+            // Отображение счёта
+            ctx.fillStyle = 'white';
+            ctx.font = '20px Arial';
+            ctx.fillText(`Счёт: ${score}`, 10, 30);
+
+            requestAnimationFrame(update);
+        }
+
+        // Функция для рисования машины игрока
+        function drawPlayerCar(x, y) {
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(x, y, 50, 80);
+
+            ctx.fillStyle = 'black';
+            ctx.beginPath();
+            ctx.arc(x + 12, y + 75, 10, 0, Math.PI * 2);
+            ctx.arc(x + 38, y + 75, 10, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = 'white';
+            ctx.fillRect(x + 10, y + 10, 15, 25);
+            ctx.fillRect(x + 25, y + 10, 15, 25);
+        }
+
+        // Функция для рестарта игры
+        function restartGame() {
+            player.x = canvas.width / 2 - 25;
+            player.y = canvas.height - 120;
+            obstacles = [];
+            gameSpeed = 2;
+            score = 0;
+            gameOver = false;
+            update();
+        }
+
+        // Инициализация игры
+        update();
+    </script>
 </body>
 </html>
