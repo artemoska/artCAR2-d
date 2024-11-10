@@ -14,6 +14,7 @@ let gameOver = false;
 const roadColor = '#555';
 const lineColor = 'white';
 
+// Управление стрелками
 document.getElementById('left').addEventListener('mousedown', () => player.movingLeft = true);
 document.getElementById('left').addEventListener('mouseup', () => player.movingLeft = false);
 document.getElementById('right').addEventListener('mousedown', () => player.movingRight = true);
@@ -37,6 +38,7 @@ document.addEventListener('keyup', (e) => {
     }
 });
 
+// Создание препятствий
 function addObstacle() {
     let x = Math.random() * (canvas.width - player.width);
     let width = Math.random() * 40 + 30;
@@ -45,17 +47,7 @@ function addObstacle() {
     obstacles.push({ x, y: -height, width, height, color });
 }
 
-function createRoadLines() {
-    roadLines = [
-        { x: canvas.width / 7 - 5, y: -50, width: 10, height: 50 }, // крайняя левая
-        { x: canvas.width / 5 - 5, y: -50, width: 10, height: 50 }, // левая полоса
-        { x: canvas.width / 5 * 2 - 5, y: -50, width: 10, height: 50 }, // средняя левая
-        { x: canvas.width / 5 * 3 - 5, y: -50, width: 10, height: 50 }, // средняя правая
-        { x: canvas.width / 5 * 4 - 5, y: -50, width: 10, height: 50 }, // правая
-        { x: canvas.width / 7 * 6 - 5, y: -50, width: 10, height: 50 }  // крайняя правая
-    ];
-}
-
+// Функция для генерации случайных цветов
 function getRandomColor() {
     const letters = '0123456789ABCDEF';
     let color = '#';
@@ -65,13 +57,26 @@ function getRandomColor() {
     return color;
 }
 
+// Функция для создания полос дороги
+function createRoadLines() {
+    roadLines = [
+        { x: canvas.width / 6 - 5, y: -50, width: 10, height: 50 }, // 1 полоса
+        { x: canvas.width / 3 - 5, y: -50, width: 10, height: 50 }, // 2 полоса
+        { x: canvas.width / 2 - 5, y: -50, width: 10, height: 50 }, // 3 полоса (центральная)
+        { x: canvas.width / 3 * 2 - 5, y: -50, width: 10, height: 50 }, // 4 полоса
+        { x: canvas.width / 6 * 5 - 5, y: -50, width: 10, height: 50 }  // 5 полоса
+    ];
+}
+
+// Основная игровая логика
 function update() {
     if (gameOver) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ctx.fillStyle = roadColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, canvas.width, canvas.height); // Заполняем фон
 
+    // Отрисовка полос
     ctx.fillStyle = lineColor;
     for (let line of roadLines) {
         line.y += gameSpeed;
@@ -80,19 +85,23 @@ function update() {
 
     roadLines = roadLines.filter(line => line.y < canvas.height);
 
+    // Добавление новых полос, если они прошли экран
     if (roadLines[roadLines.length - 1].y > 100) {
-        createRoadLines(); // Создание новых полос
+        createRoadLines();
     }
 
-    if (player.movingLeft && player.x > 0) {
+    // Управление движением автомобиля
+    if (player.movingLeft && player.x > canvas.width / 6) {
         player.x -= player.speed;
     }
-    if (player.movingRight && player.x < canvas.width - player.width) {
+    if (player.movingRight && player.x < canvas.width - player.width - canvas.width / 6) {
         player.x += player.speed;
     }
 
+    // Отрисовка автомобиля
     drawPlayerCar(player.x, player.y);
 
+    // Обновление и отрисовка препятствий
     for (let obstacle of obstacles) {
         obstacle.y += gameSpeed;
         ctx.fillStyle = obstacle.color;
@@ -127,6 +136,7 @@ function update() {
     requestAnimationFrame(update);
 }
 
+// Функция для рисования машины
 function drawPlayerCar(x, y) {
     ctx.fillStyle = 'blue';
     ctx.fillRect(x, y, 50, 80);
@@ -142,6 +152,7 @@ function drawPlayerCar(x, y) {
     ctx.fillRect(x + 25, y + 10, 15, 25);
 }
 
+// Рестарт игры
 function restartGame() {
     player.x = canvas.width / 2 - 25;
     player.y = canvas.height - 120;
@@ -154,5 +165,6 @@ function restartGame() {
     update();
 }
 
+// Инициализация
 createRoadLines();
 update();
